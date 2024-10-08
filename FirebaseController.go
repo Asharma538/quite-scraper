@@ -34,8 +34,6 @@ func (controller *FirebaseController) init() {
 	if err != nil {
 		fmt.Printf("Error initializing firestore client %v\n", err)
 	}
-
-	return
 }
 
 func (controller *FirebaseController) getUsersToMonitor(platform string) []string {
