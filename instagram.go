@@ -17,6 +17,7 @@ func (Ig *Instagram) addUser(username string) {
 	Ig.users_to_monitor = append(Ig.users_to_monitor, username);
 }
 
+// For getting the number of posts done by user
 func (Ig *Instagram) getPosts(profile_info string) int {
 	var info_numbers[] int;
 	for i:=0 ; i<len(profile_info) ; i++ {
@@ -36,6 +37,7 @@ func (Ig *Instagram) getPosts(profile_info string) int {
 	return info_numbers[2];
 }
 
+// For getting the activity of the user, i.e. followers, following, posts
 func (Ig *Instagram) getActivity(usr string) int {
 	res,err := http.Get("https://www.instagram.com/"+usr+"/?hl=en");
 	if err != nil {
@@ -70,6 +72,7 @@ func (Ig *Instagram) getActivity(usr string) int {
 	return -1;
 }
 
+// For checking and updating the posts of the user
 func (Ig *Instagram) checkAndUpdateActivity(usr string,last_act int) bool {
 	// getting the lastest activity of the user
 	latest_activity := Ig.getActivity(usr);
