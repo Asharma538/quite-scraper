@@ -1,4 +1,4 @@
-package main
+package controllers
 
 import (
 	"context"
@@ -12,33 +12,34 @@ import (
 )
 
 type FirebaseController struct {
-	authClient      *auth.Client
-	firestoreClient *firestore.Client
-	collection      string
+	AuthClient      *auth.Client
+	FirestoreClient *firestore.Client
+	Collection      string
 }
 
-func (controller *FirebaseController) init() {
-	opt := option.WithCredentialsFile("./secret_key.json")
+func (controller *FirebaseController) Init() {
+	opt := option.WithCredentialsFile("./config/secret_key.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 
+	
 	if err != nil {
 		fmt.Printf("Error initializing app: %v\n", err)
 	}
 
-	controller.authClient, err = app.Auth(context.Background())
+	controller.AuthClient, err = app.Auth(context.Background())
 	if err != nil {
 		fmt.Printf("Error getting Auth client: %v\n", err)
 	}
 
-	controller.firestoreClient, err = app.Firestore(context.Background())
+	controller.FirestoreClient, err = app.Firestore(context.Background())
 	if err != nil {
 		fmt.Printf("Error initializing firestore client %v\n", err)
 	}
 }
 
-func (controller *FirebaseController) getUsersToMonitor(platform string) []string {
+func (controller *FirebaseController) GetUsersToMonitor(platform string) []string {
 	// Requesting the document of the Platform
-	snapshot, err := controller.firestoreClient.Collection(controller.collection).Doc(platform).Get(context.Background())
+	snapshot, err := controller.FirestoreClient.Collection(controller.Collection).Doc(platform).Get(context.Background())
 	if err != nil {
 		fmt.Println(err)
 	}

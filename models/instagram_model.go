@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"fmt"
@@ -8,17 +8,30 @@ import (
 )
 
 type Instagram struct {
-	users_to_monitor []string
-	last_activity    map[string]int
+	Users_to_monitor []string
+	Last_activity    map[string]int
 }
 
 // For Adding a new user to monitor
-func (Ig *Instagram) addUser(username string) {
-	Ig.users_to_monitor = append(Ig.users_to_monitor, username)
+func (Ig *Instagram) AddUser(username string) {
+	Ig.Users_to_monitor = append(Ig.Users_to_monitor, username)
 }
 
 // For getting the number of posts done by user
-func (Ig *Instagram) getPosts(profile_info string) int {
+func (Ig *Instagram) getPosts(profile_info_raw string) int {
+	profile_info := ""
+	fmt.Println(profile_info_raw)
+
+	profile_info += string(profile_info_raw[0])
+	for i := 1; i < len(profile_info_raw)-1; i++ {
+		if (profile_info_raw[i-1] >= '0' && profile_info_raw[i-1] <= '9') && (profile_info_raw[i+1] >= '0' && profile_info_raw[i+1] <= '9') && profile_info_raw[i] == ',' {
+			continue
+		}
+		profile_info += string(profile_info_raw[i])
+	}
+	profile_info += string(profile_info_raw[len(profile_info_raw)-1])
+	fmt.Println(profile_info)
+
 	var info_numbers []int
 	for i := 0; i < len(profile_info); i++ {
 		num_string := ""
@@ -34,6 +47,7 @@ func (Ig *Instagram) getPosts(profile_info string) int {
 			info_numbers = append(info_numbers, num)
 		}
 	}
+
 	return info_numbers[2]
 }
 
@@ -72,7 +86,7 @@ func (Ig *Instagram) getActivity(usr string) int {
 }
 
 // For checking and updating the posts of the user
-func (Ig *Instagram) checkAndUpdateActivity(usr string, last_act int) bool {
+func (Ig *Instagram) CheckAndUpdateActivity(usr string, last_act int) bool {
 	// getting the lastest activity of the user
 	latest_activity := Ig.getActivity(usr)
 
@@ -82,6 +96,6 @@ func (Ig *Instagram) checkAndUpdateActivity(usr string, last_act int) bool {
 	}
 
 	// if there's a new activity
-	Ig.last_activity[usr] = latest_activity
+	Ig.Last_activity[usr] = latest_activity
 	return true
 }
