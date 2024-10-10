@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"quite-scraper/controllers"
 	"quite-scraper/models"
-	"time"
+	"sync"
 )
 
 func main() {
-	firebaseController := controllers.FirebaseController{};
+	firebaseController := controllers.FirebaseController{}
 	firebaseController.Collection = "Quite-Scraper"
 	firebaseController.Init()
 	defer firebaseController.FirestoreClient.Close()
@@ -17,15 +18,32 @@ func main() {
 	Ig.Last_activity = make(map[string]int)
 	Ig.Users_to_monitor = firebaseController.GetUsersToMonitor("Instagram")
 
-	for {
-		for _, user := range Ig.Users_to_monitor {
-			if Ig.CheckAndUpdateActivity(user, Ig.Last_activity[user]) {
-				fmt.Println("New activity detected for user " + user)
-			}
-			fmt.Println(user, Ig.Last_activity[user])
-		}
-		fmt.Print("\n\n\n\n");
-		time.Sleep(5 * time.Minute)
-	}
+	fmt.Println("Users to monitor: ", Ig.Users_to_monitor)
 
+	http.HandleFunc("/getActivity", func(w http.ResponseWriter, r *http.Request) {
+		users := ""
+		var waitGroup sync.WaitGroup
+		var mu = &sync.Mutex{}
+
+		for _, user := range Ig.Users_to_monitor {
+			waitGroup.Add(1)
+			go func(u string) {
+				defer waitGroup.Done()
+				if Ig.CheckAndUpdateActivity(u, Ig.Last_activity[u]) {
+					mu.Lock()
+					users += u + ":yes,"
+					mu.Unlock()
+				} else {
+					mu.Lock()
+					users += u + ":no,"
+					mu.Unlock()
+				}
+			}(user)
+		}
+
+		waitGroup.Wait()
+		fmt.Fprint(w, users)
+	})
+
+	http.ListenAndServe(":8080", nil)
 }
