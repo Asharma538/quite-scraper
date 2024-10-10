@@ -43,6 +43,7 @@
   padding: 12px 15px;
   border: 3px solid white;
   transition: .3s;
+  margin: 20px;
 }
 
 .card:hover{
