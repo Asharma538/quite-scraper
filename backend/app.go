@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"quite-scraper/controllers"
@@ -20,29 +21,26 @@ func main() {
 
 	fmt.Println("Users to monitor: ", Ig.Users_to_monitor)
 
-	http.HandleFunc("/getActivity", func(w http.ResponseWriter, r *http.Request) {
-		users := ""
-		var waitGroup sync.WaitGroup
-		var mu = &sync.Mutex{}
+	http.HandleFunc("/getactivity", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
+		var waitGroup sync.WaitGroup
 		for _, user := range Ig.Users_to_monitor {
 			waitGroup.Add(1)
 			go func(u string) {
 				defer waitGroup.Done()
-				if Ig.CheckAndUpdateActivity(u, Ig.Last_activity[u]) {
-					mu.Lock()
-					users += u + ":yes,"
-					mu.Unlock()
-				} else {
-					mu.Lock()
-					users += u + ":no,"
-					mu.Unlock()
-				}
+				Ig.CheckAndUpdateActivity(u, Ig.Last_activity[u])
 			}(user)
 		}
-
 		waitGroup.Wait()
-		fmt.Fprint(w, users)
+
+		responseJson, err := json.Marshal(Ig.Last_activity)
+		if err != nil {
+			fmt.Print("Error:" + err.Error())
+			return
+		}
+		w.Write(responseJson)
 	})
 
 	http.ListenAndServe(":8080", nil)
