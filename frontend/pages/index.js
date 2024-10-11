@@ -4,25 +4,25 @@ import styles from '../styles/Home.module.css';
 
 export default function Home() {
 
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(["living__motivation"]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch('http://localhost:8080/getactivity')
-      .then(response => response.json())
-      .then(data => {
-        if (data==null) return;
-        
-        console.log(data);
-        setUsers(data["users_with_updates"]);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    }, 10000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetch('http://localhost:8080/getactivity')
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       if (data==null) return;
 
-    return () => clearInterval(interval);
-  }, []);
+  //       console.log(data);
+  //       setUsers((prev)=>([...prev, data]));
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     })
+  //   }, 10000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <div className={styles.container}>
@@ -37,12 +37,15 @@ export default function Home() {
         </h1>
 
         <p className={styles.description}>
-          See updates from the users you're monitoring
+          Just see updates from the users you're monitoring
         </p>
-        <div>{
+        <div className={styles.flexbox}>{
           users.map(elem=>{
             return <div className={styles.card}>
-              {elem}
+              <div className={styles.usernames} onClick={()=>{location.href="https://www.instagram.com/"+elem}}>
+                {elem}
+              </div>
+              
             </div>
           })
         }</div>
@@ -67,6 +70,10 @@ export default function Home() {
             Helvetica Neue,
             sans-serif;
             color: white;
+        }
+        :root {
+          --border1: #0070f3;
+          --border2: #ff0080;
         }
         * {
           box-sizing: border-box;
