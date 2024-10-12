@@ -6,23 +6,22 @@ export default function Home() {
 
   const [users, setUsers] = useState(["living__motivation"]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     fetch('http://localhost:8080/getactivity')
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       if (data==null) return;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('http://localhost:8080/getactivity')
+      .then(response => response.json())
+      .then(data => {
+        if (data==null) return;
+        console.log(data);
+        setUsers((prev)=>([...prev, data]));
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }, 10000);
 
-  //       console.log(data);
-  //       setUsers((prev)=>([...prev, data]));
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //     })
-  //   }, 10000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -45,7 +44,9 @@ export default function Home() {
               <div className={styles.usernames} onClick={()=>{location.href="https://www.instagram.com/"+elem}}>
                 {elem}
               </div>
-              
+              <div className={styles.remove_user} onClick={()=>{setUsers(users.filter(user=>user!=elem));}}>
+                &#x2715;
+              </div>
             </div>
           })
         }</div>

@@ -46,6 +46,7 @@
 .card{
   height: 55px;
   width: 200px;
+  display: flex;
 
   transition: .3s;
   margin: 20px;
@@ -70,6 +71,7 @@
 .usernames{
   color: white;
   cursor: pointer;
+  padding: 0px 12px;
 }
 
 .usernames:hover{
@@ -77,8 +79,13 @@
 }
 
 .remove_user{
-  color: red;
+  color: white;
   cursor: pointer;
+  padding: 0px;
+}
+
+.remove_user:hover{
+  color: red;
 }
 
 @keyframes rotation {
