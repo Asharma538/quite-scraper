@@ -10,14 +10,18 @@ import (
 )
 
 func main() {
+	fmt.Println("Connecting to firebase...")
 	firebaseController := controllers.FirebaseController{}
 	firebaseController.Collection = "Quite-Scraper"
 	firebaseController.Init()
 	defer firebaseController.FirestoreClient.Close()
+	fmt.Println("Connected!")
 
+	fmt.Println("Starting Instagram monitoring...")
 	Ig := models.Instagram{}
 	Ig.Last_activity = make(map[string]int)
 	Ig.Users_to_monitor = firebaseController.GetUsersToMonitor("Instagram")
+	fmt.Println("Users to monitor:",Ig.Users_to_monitor);
 
 	var waitGroup sync.WaitGroup
 	for _, user := range Ig.Users_to_monitor {
@@ -29,8 +33,7 @@ func main() {
 	}
 	waitGroup.Wait()
 
-	fmt.Println("Users to monitor: ", Ig.Users_to_monitor)
-
+	fmt.Println("Starting server...")
 	http.HandleFunc("/getactivity", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
