@@ -82,3 +82,6 @@ quite-scraper/
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request for any changes.
+
+---
+This readme is generated completely by Github Copilot! except this line :)
